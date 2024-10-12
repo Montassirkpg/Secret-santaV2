@@ -1,18 +1,23 @@
-const assignSecretSanta = (members) => {
-    let receivers = [...members];
+const Membership = require('../models/Membership');
+
+exports.assignSecretSantas = async (groupId) => {
+    const members = await Membership.find({ group: groupId });
+    if (members.length < 2) throw new Error('Not enough members in the group');
+
     const assignments = [];
-  
-    members.forEach((giver) => {
-      let receiverIndex;
-      do {
-        receiverIndex = Math.floor(Math.random() * receivers.length);
-      } while (receivers[receiverIndex]._id.toString() === giver._id.toString());
-      assignments.push({ giverId: giver._id, receiverId: receivers[receiverIndex]._id });
-      receivers.splice(receiverIndex, 1);
-    });
-  
+    const shuffledMembers = members.sort(() => 0.5 - Math.random());
+
+    for (let i = 0; i < shuffledMembers.length; i++) {
+        const santa = shuffledMembers[i];
+        const receiver = shuffledMembers[(i + 1) % shuffledMembers.length]; // Ensure no one is assigned to themselves
+        assignments.push({ santaId: santa.user, receiverId: receiver.user });
+    }
+
+    // Save assignments in the database
+    await Membership.updateMany(
+        { group: groupId },
+        { $set: { assignments } }
+    );
+
     return assignments;
-  };
-  
-  module.exports = assignSecretSanta;
-  
+};

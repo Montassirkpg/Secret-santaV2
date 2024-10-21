@@ -23,4 +23,4 @@ Cette API permet aux utilisateurs de s'inscrire, de créer des groupes et de gé
 1. Clonez le dépôt :
 
    ```bash
-   git clone https://github.com/Montassirkpg/Secret-santa
+   git clone https://github.com/Montassirkpg/Secret-santaV2.git
